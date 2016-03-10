@@ -15,8 +15,8 @@
   "author": "Vladimir Agafonkin",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^1.9.0",
-    "eslint-config-mourner": "^1.0.1"
+    "eslint": "^2.3.0",
+    "eslint-config-mourner": "^2.0.0"
   },
   "eslintConfig": {
     "extends": "mourner",
