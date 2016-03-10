@@ -9,7 +9,7 @@
   "dependencies": {
     "lineclip": "^1.1.5",
     "linematch": "^1.0.3",
-    "tile-reduce": "git+https://github.com/mapbox/tile-reduce.git#nextgen"
+    "tile-reduce": "^3.1.0"
   },
   "keywords": [],
   "author": "Vladimir Agafonkin",

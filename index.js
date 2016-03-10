@@ -1,6 +1,6 @@
 'use strict';
 
-var tileReduce = require('../../src');
+var tileReduce = require('tile-reduce');
 var path = require('path');
 
 tileReduce({
