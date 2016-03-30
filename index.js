@@ -1,20 +1,24 @@
-'use strict';
-
 var tileReduce = require('tile-reduce');
 var path = require('path');
+var fs = require('fs');
+
+var osm = process.argv[2];
+var tiger = process.argv[3];
+
+if (!osm || !tiger) return console.log('must specify osm and tiger tilesets:', process.argv[0], process.argv[1], '<osm.mbtiles>', '<tiger.mbtiles>');
 
 tileReduce({
   zoom: 12,
   map: path.join(__dirname, 'diff.js'),
   sources: [
-    {name: 'osm',   mbtiles: path.join(__dirname, 'osm.mbtiles'), raw: true},
-    {name: 'tiger', mbtiles: path.join(__dirname, 'tiger.mbtiles'), raw: true}
-  ]
+    {name: 'osm',   mbtiles: path.join(__dirname, osm), raw: true},
+    {name: 'tiger', mbtiles: path.join(__dirname, tiger), raw: true}
+  ],
+  output: fs.createWriteStream('tiger2015-diff.ldjson')
 })
 .on('start', function() {
-  // null feature is a hack to be able to write each feature starting with a comma
-  process.stdout.write('{"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": null, "properties": null}');
+    console.log('start');
 })
 .on('end', function() {
-  process.stdout.write(']}');
+    console.log('end');
 });
