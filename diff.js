@@ -1,5 +1,3 @@
-'use strict';
-
 var linematch = require('linematch');
 var lineclip = require('lineclip');
 
@@ -11,19 +9,22 @@ module.exports = function(data, tile, writeData, done) {
 
   // find tiger parts that are not covered by streets within 10 pixels;
   // filter out chunks that are too short
-  var diff = linematch(tiger, streets, 10).filter(filterShort);
+  var diff = linematch(tiger, streets, 20).filter(filterShort);
 
   if (diff.length) {
-    // write a feature with the diff as MultiLineString
-    // console.log(diff.length)
-    writeData(',' + JSON.stringify({
+    // write each feature as a linestring
+    var feature = {
       type: 'Feature',
       properties: {},
       geometry: {
-        type: 'MultiLineString',
-        coordinates: toGeoJSON(diff, tile)
+        type: 'LineString'
       }
-    }));
+    };
+
+    toGeoJSON(diff, tile).forEach(function(line) {
+      feature.geometry.coordinates = line;
+      writeData(JSON.stringify(feature) + '\n');
+    });
   }
 
   done(null, null);
