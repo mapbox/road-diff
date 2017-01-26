@@ -3,18 +3,21 @@ var path = require('path');
 var fs = require('fs');
 
 var osm = process.argv[2];
-var tiger = process.argv[3];
+var other_for_diff = process.argv[3];
 
-if (!osm || !tiger) return console.log('must specify osm and tiger tilesets:', process.argv[0], process.argv[1], '<osm.mbtiles>', '<tiger.mbtiles>');
+if (!osm || !other_for_diff) return console.log('must specify osm and other_for_diff tilesets:', process.argv[0], process.argv[1], '<osm.mbtiles>', '<other_for_diff.mbtiles>');
 
+// The `sourceCover: 'other_for_diff'` flag tells tileReduce to limit the area
+// it's diffing to the smaller region of other_for_diff.
 tileReduce({
   zoom: 12,
   map: path.join(__dirname, 'diff.js'),
+  sourceCover: 'other_for_diff',
   sources: [
-    {name: 'osm',   mbtiles: path.join(__dirname, osm), raw: true},
-    {name: 'tiger', mbtiles: path.join(__dirname, tiger), raw: true}
+    {name: 'osm',   mbtiles: osm, raw: true},
+    {name: 'other_for_diff', mbtiles: other_for_diff, raw: true}
   ],
-  output: fs.createWriteStream('tiger2015-diff.ldjson')
+  output: fs.createWriteStream('osm_to_other_mbtiles_diff.ldjson')
 })
 .on('start', function() {
     console.log('start');

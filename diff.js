@@ -4,12 +4,12 @@ var lineclip = require('lineclip');
 module.exports = function(data, tile, writeData, done) {
 
   // filter and normalize input geometry
-  var tiger = toLines(data.tiger.tiger2015);
+  var other_for_diff = toLines(data.other_for_diff.osm);
   var streets = toLines(data.osm.osm);
 
-  // find tiger parts that are not covered by streets within 10 pixels;
-  // filter out chunks that are too short
-  var diff = linematch(tiger, streets, 20).filter(filterShort);
+  // Find other_for_diff parts that are not covered by streets within 10 pixels;
+  // filter out chunks that are too short.
+  var diff = linematch(other_for_diff, streets, 20).filter(filterShort);
 
   if (diff.length) {
     // write each feature as a linestring
@@ -58,8 +58,9 @@ function toLines(layer) {
   for (var i = 0; i < layer.length; i++) {
     var feature = layer.feature(i);
 
-    // only consider polygon features with Tiger name or OSM highway tag
-    if (feature.type === 2 && (feature.properties.FULLNAME !== '' || feature.properties.highway)) {
+    // Only consider polygon features with OSM highway tag and of correct type.
+    // This will remove undesired differences (buildings, walls, etc.).
+    if (feature.type === 2 && feature.properties.highway) {
       var geom = feature.loadGeometry();
 
       for (var k = 0; k < geom.length; k++) {
