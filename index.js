@@ -10,17 +10,26 @@ if (!osm || !other_for_diff) return console.log('must specify osm and other_for_
 // The `sourceCover: 'other_for_diff'` flag tells tileReduce to limit the area
 // it's diffing to the smaller region of other_for_diff.
 tileReduce({
-  zoom: 12,
+  maxWorkers: 1,
+  zoom: 10,
   map: path.join(__dirname, 'diff.js'),
-  sourceCover: 'other_for_diff',
+  tiles: [
+		[739,446,10]
+	],
   sources: [
     {name: 'osm',   mbtiles: osm, raw: true},
     {name: 'other_for_diff', mbtiles: other_for_diff, raw: true}
   ],
-  output: fs.createWriteStream('osm_to_other_mbtiles_diff.ldjson')
+  output: fs.createWriteStream('osm_to_other_mbtiles_diff1.ldjson')
 })
 .on('start', function() {
     console.log('start');
+})
+.on('map', function (tile, workerId) {
+	console.log('about to process ' + JSON.stringify(tile) +' on worker '+workerId);
+})
+.on('reduce', function(result, tile){
+ console.log('tlo')
 })
 .on('end', function() {
     console.log('end');

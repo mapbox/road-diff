@@ -1,15 +1,25 @@
 var linematch = require('linematch');
 var lineclip = require('lineclip');
 
+
+
+// module.exports = function(data, tile, writeData, done) {
+//   var count = 0;
+//   console.log(data.osm.LineString)
+//   if (data.osm.roads) count += data.osm.roads.length;
+//   done(null, count);
+// };
+
 module.exports = function(data, tile, writeData, done) {
 
+  
   // filter and normalize input geometry
-  var other_for_diff = toLines(data.other_for_diff.osm);
-  var streets = toLines(data.osm.osm);
-
+  var other_for_diff = toLines(data.other_for_diff.LineString);
+  var streets = toLines(data.osm.LineString);
+  // console.log(streets)
   // Find other_for_diff parts that are not covered by streets within 10 pixels;
   // filter out chunks that are too short.
-  var diff = linematch(other_for_diff, streets, 20).filter(filterShort);
+  var diff = linematch(other_for_diff, streets, 1).filter(filterShort);
 
   if (diff.length) {
     // write each feature as a linestring
@@ -60,7 +70,8 @@ function toLines(layer) {
 
     // Only consider polygon features with OSM highway tag and of correct type.
     // This will remove undesired differences (buildings, walls, etc.).
-    if (feature.type === 2 && feature.properties.highway) {
+    // console.log(feature)
+    if (feature.type === 2 ) {
       var geom = feature.loadGeometry();
 
       for (var k = 0; k < geom.length; k++) {
