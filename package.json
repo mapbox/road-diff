@@ -15,6 +15,7 @@
   "author": "Vladimir Agafonkin",
   "license": "ISC",
   "devDependencies": {
+    "@mapbox/tilebelt": "^1.0.2",
     "eslint": "^2.3.0",
     "eslint-config-mourner": "^2.0.0"
   },

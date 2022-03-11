@@ -3,24 +3,68 @@ var path = require('path');
 var fs = require('fs');
 
 var osm = process.argv[2];
-var other_for_diff = process.argv[3];
+var geosadak = process.argv[3];
+var diff_output = process.argv[4];
 
-if (!osm || !other_for_diff) return console.log('must specify osm and other_for_diff tilesets:', process.argv[0], process.argv[1], '<osm.mbtiles>', '<other_for_diff.mbtiles>');
+const accessToken='pk.eyJ1IjoicGxhbmVtYWQiLCJhIjoiemdYSVVLRSJ9.g3lbg_eN0kztmsfIPxa9MQ'
+
+if (!osm || !geosadak) return console.log('must specify osm and other_for_diff tilesets:', process.argv[0], process.argv[1], '<osm.mbtiles>', '<other_for_diff.mbtiles>');
+
+
+var geojson = {
+  "type": "Polygon",
+  "coordinates": [
+    [
+      [
+        75.640869140625,
+        7.798078531355303
+      ],
+      [
+        78.695068359375,
+        7.798078531355303
+      ],
+      [
+        78.695068359375,
+        10.293301000109102
+      ],
+      [
+        75.640869140625,
+        10.293301000109102
+      ],
+      [
+        75.640869140625,
+        7.798078531355303
+      ]
+    ]
+  ]
+}
 
 // The `sourceCover: 'other_for_diff'` flag tells tileReduce to limit the area
 // it's diffing to the smaller region of other_for_diff.
 tileReduce({
-  maxWorkers: 1,
-  zoom: 10,
+  geojson : geojson,
+  maxWorkers: 20,
+  zoom: 12,
   map: path.join(__dirname, 'diff.js'),
-  tiles: [
-		[739,446,10]
-	],
   sources: [
-    {name: 'osm',   mbtiles: osm, raw: true},
-    {name: 'other_for_diff', mbtiles: other_for_diff, raw: true}
+    // {
+    //   name: 'osm',
+    //   url: `https://b.tiles.mapbox.com/v4/mapbox.mapbox-streets-v8/{z}/{x}/{y}.vector.pbf?access_token=${accessToken}`,
+    //   layers: ['road'],
+    //   raw: true,
+    //   maxrate: 10
+    // },
+    // {
+    //   name: 'other_for_diff',
+    //   url: `https://b.tiles.mapbox.com/v4/planemad.india-rural-connectivity/{z}/{x}/{y}.vector.pbf?access_token=${accessToken}`,
+    //   layers: ['roads'],
+    //   raw: true,
+    //   maxrate: 10
+    // }
+    {name: 'osm_qa_tiles',   mbtiles: osm, raw: true},
+    {name: 'geosadak', mbtiles: geosadak, raw: true}
   ],
-  output: fs.createWriteStream('osm_to_other_mbtiles_diff1.ldjson')
+  output: fs.createWriteStream(diff_output)
 })
 .on('start', function() {
     console.log('start');
@@ -28,9 +72,7 @@ tileReduce({
 .on('map', function (tile, workerId) {
 	console.log('about to process ' + JSON.stringify(tile) +' on worker '+workerId);
 })
-.on('reduce', function(result, tile){
- console.log('tlo')
-})
 .on('end', function() {
     console.log('end');
 });
+
